@@ -6,13 +6,14 @@
 
 
 -- Added Create Schema and use entries
+DROP schema if exists `mm_cpsc502101team05`;
 CREATE SCHEMA `mm_cpsc502101team05` ;
 use `mm_cpsc502101team05` ;
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!50503 SET NAMES utf8 */;
+/*!50503 SET NAMES utf8mb4 */;
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
 /*!40103 SET TIME_ZONE='+00:00' */;
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
@@ -20,13 +21,13 @@ use `mm_cpsc502101team05` ;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 SET @MYSQLDUMP_TEMP_LOG_BIN = @@SESSION.SQL_LOG_BIN;
-SET @@SESSION.SQL_LOG_BIN= 0;
+-- SET @@SESSION.SQL_LOG_BIN= 0;
 
 --
 -- GTID state at the beginning of the backup
 --
 
-SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ '';
+-- SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ '';
 
 --
 -- Table structure for table `clinical_test`
@@ -50,7 +51,7 @@ CREATE TABLE `clinical_test` (
   CONSTRAINT `fk_Clinical Test_Equipment1` FOREIGN KEY (`equipment_id`) REFERENCES `equipment` (`equipment_id`),
   CONSTRAINT `fk_Clinical Test_SOP1` FOREIGN KEY (`sop_id`) REFERENCES `sop` (`sop_id`),
   CONSTRAINT `fk_Clinical Test_Technician1` FOREIGN KEY (`technician_id`) REFERENCES `technician` (`technician_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -74,7 +75,7 @@ CREATE TABLE `clinical_test_uses_materials` (
   `material_id` int DEFAULT NULL,
   `clinical_test_id` int DEFAULT NULL,
   `clinical_tests_uses_materials_quantity_used` int DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -98,7 +99,7 @@ CREATE TABLE `competency` (
   `competency_id` varchar(45) NOT NULL,
   `compentency_due_date` datetime NOT NULL,
   PRIMARY KEY (`competency_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -131,7 +132,7 @@ CREATE TABLE `equipment` (
   PRIMARY KEY (`equipment_id`),
   KEY `fk_Equipment_SOP1_idx` (`sop_id`),
   CONSTRAINT `fk_Equipment_SOP1` FOREIGN KEY (`sop_id`) REFERENCES `sop` (`sop_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -153,15 +154,15 @@ DROP TABLE IF EXISTS `materials`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `materials` (
   `material_id` int DEFAULT NULL,
-  `material_manufacturer` varchar(16) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
-  `material_description` varchar(27) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
-  `material_lot_number` varchar(9) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `material_manufacturer` varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `material_description` varchar(27) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `material_lot_number` varchar(9) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `material_par_number` int DEFAULT NULL,
   `material_expiration_date` datetime DEFAULT NULL,
   `material_quantity_received` int DEFAULT NULL,
   `Quantity_Used_per_Clinical_Test` int DEFAULT NULL,
-  `material_reference` varchar(33) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `material_reference` varchar(33) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -191,7 +192,7 @@ CREATE TABLE `patient` (
   PRIMARY KEY (`patient_id`),
   KEY `fk_Patient_Physician1_idx` (`physician_id`),
   CONSTRAINT `fk_Patient_Physician1` FOREIGN KEY (`physician_id`) REFERENCES `physician` (`physician_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -220,7 +221,7 @@ CREATE TABLE `physician` (
   `physician_phone_number` varchar(45) NOT NULL,
   `physician_email` varchar(45) NOT NULL,
   PRIMARY KEY (`physician_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -241,12 +242,12 @@ DROP TABLE IF EXISTS `service_history`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `service_history` (
-  `equipment_id` varchar(5) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `equipment_id` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `service_date` datetime DEFAULT NULL,
-  `service_provider_id` varchar(25) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
-  `service_type` varchar(24) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `service_provider_id` varchar(25) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `service_type` varchar(24) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `service_due_date` datetime DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -273,7 +274,7 @@ CREATE TABLE `service_provider` (
   `service_provider_contract_id` varchar(45) NOT NULL,
   `service_provider_contract_due` datetime NOT NULL,
   PRIMARY KEY (`service_provider_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -299,7 +300,7 @@ CREATE TABLE `sop` (
   `sop_title` varchar(45) NOT NULL,
   `sop_revision_date` datetime NOT NULL,
   PRIMARY KEY (`sop_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -325,7 +326,7 @@ CREATE TABLE `technician` (
   `technician_first_name` varchar(45) NOT NULL,
   `technician_initial` varchar(45) NOT NULL,
   PRIMARY KEY (`technician_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -354,7 +355,7 @@ CREATE TABLE `technician_has_competency` (
   KEY `fk_Technician_Has_Competency_Competency1_idx` (`competency_id`),
   CONSTRAINT `fk_Technician_Has_Competency_Competency1` FOREIGN KEY (`competency_id`) REFERENCES `competency` (`competency_id`),
   CONSTRAINT `fk_Technician_Has_Competency_Technician1` FOREIGN KEY (`technician_id`) REFERENCES `technician` (`technician_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -368,9 +369,9 @@ INSERT INTO `technician_has_competency` VALUES (103,'Basic Metabolic Panel ','2
 UNLOCK TABLES;
 
 --
--- Dumping routines for database 'mm_cpsc502101team05'
+-- Dumping routines for database 'mydb'
 --
-SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
+-- SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -382,5 +383,3 @@ SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
 -- Dump completed on 2021-05-21  0:31:58
-
-
