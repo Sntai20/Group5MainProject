@@ -20,20 +20,20 @@ import java.util.ArrayList;
 public class QueryJDBC {
 
 
-    public Connection m_conn = null; 
+    public Connection m_conn = null;
     static final String DB_DRV = "com.mysql.jdbc.Driver";
-    String m_error="";  
+    String m_error="";
     String m_url;
     String m_user;
     String [] m_headers;
     String [][] m_allRows;
     int m_updateAmount = 0;
-       
+
     QueryJDBC ()
     {
         m_updateAmount = 0;
     }
-    
+
     public String GetError()
     {
         return m_error;
@@ -44,34 +44,34 @@ public class QueryJDBC {
     {
         return this.m_headers;
     }
-    
+
     public String [][] GetData()
     {
         return this.m_allRows;
     }
-    
+
     public int GetUpdateCount()
     {
         return m_updateAmount;
     }
-    
 
-    
+
+
     // We think we can always setString on Parameters. Not sure
     // if this is true.
     // GetString on Results is fine though
-    
+
     public boolean ExecuteQuery(String szQuery, String [] parms, boolean [] likeparms)
     {
-        PreparedStatement preparedStatement = null;        
+        PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         int nColAmt;
         boolean bOK = true;
         // Try to get the columns and the amount of columns
         try
         {
-       
-            preparedStatement=this.m_conn.prepareStatement(szQuery);            
+
+            preparedStatement=this.m_conn.prepareStatement(szQuery);
 
             int nParamAmount = parms.length;
 
@@ -89,10 +89,10 @@ public class QueryJDBC {
             //preparedStatement.setString(1,  "%" + szContact + "%");
             resultSet=preparedStatement.executeQuery();
 
-            ResultSetMetaData rsmd = resultSet.getMetaData(); 
+            ResultSetMetaData rsmd = resultSet.getMetaData();
             nColAmt = rsmd.getColumnCount();
             m_headers = new String [nColAmt];
-            
+
             for (int i=0; i< nColAmt; i++)
             {
                 m_headers[i] = rsmd.getColumnLabel(i+1);
@@ -111,55 +111,55 @@ public class QueryJDBC {
                 {
                     for (int i=0; i < nColAmt; i++)
                     {
-                       m_allRows[nCurRow][i] = resultSet.getString(i+1);
+                        m_allRows[nCurRow][i] = resultSet.getString(i+1);
                     }
                     nCurRow++;
-                }                                
+                }
             }
             else
             {
-                this.m_allRows= new String [1][nColAmt];               
+                this.m_allRows= new String [1][nColAmt];
                 for (int i=0; i < nColAmt; i++)
                 {
-                   m_allRows[0][i] = "";
-                }               
+                    m_allRows[0][i] = "";
+                }
             }
-                  
+
             preparedStatement.close();
-            resultSet.close();            
+            resultSet.close();
         }
 
-        catch (SQLException ex) 
+        catch (SQLException ex)
         {
             bOK = false;
             this.m_error = "SQLException: " + ex.getMessage();
             this.m_error += "SQLState: " + ex.getSQLState();
             this.m_error += "VendorError: " + ex.getErrorCode();
-            
-            
+
+
             System.out.println("SQLException: " + ex.getMessage());
             System.out.println("SQLState: " + ex.getSQLState());
             System.out.println("VendorError: " + ex.getErrorCode());
             return false;
 
-        }          
-                
+        }
+
         return true;
     }
 
-    
-     public boolean ExecuteUpdate(String szQuery, String [] parms)
+
+    public boolean ExecuteUpdate(String szQuery, String [] parms)
     {
-        PreparedStatement preparedStatement = null;        
+        PreparedStatement preparedStatement = null;
 
         boolean bOK = true;
         m_updateAmount=0;
-        
+
         // Try to get the columns and the amount of columns
         try
         {
-       
-            preparedStatement=this.m_conn.prepareStatement(szQuery);            
+
+            preparedStatement=this.m_conn.prepareStatement(szQuery);
 
             int nParamAmount = parms.length;
 
@@ -167,91 +167,90 @@ public class QueryJDBC {
             {
                 preparedStatement.setString(i+1, parms[i]);
             }
-            
-            m_updateAmount =preparedStatement.executeUpdate();  
-            preparedStatement.close();          
+
+            m_updateAmount =preparedStatement.executeUpdate();
+            preparedStatement.close();
         }
 
-        catch (SQLException ex) 
+        catch (SQLException ex)
         {
             bOK = false;
             this.m_error = "SQLException: " + ex.getMessage();
             this.m_error += "SQLState: " + ex.getSQLState();
             this.m_error += "VendorError: " + ex.getErrorCode();
-            
-            
+
+
             System.out.println("SQLException: " + ex.getMessage());
             System.out.println("SQLState: " + ex.getSQLState());
             System.out.println("VendorError: " + ex.getErrorCode());
             return false;
 
-        }          
-                
+        }
+
         return true;
     }
-   
-    
-                 
+
+
+
     public boolean ConnectToDatabase(String host, String user, String pass, String database)
-    {        
+    {
         String url;
-        
+
         url = "jdbc:mysql://";
         url += host;
         url +=":3306/";
-        url += database;   
+        url += database;
         url +="?useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
-        try 
+        try
         {
 
             Class.forName(DB_DRV).newInstance();
             m_conn = DriverManager.getConnection(url,user,pass);
-           
-        } 
-        catch (SQLException ex) 
+
+        }
+        catch (SQLException ex)
         {
             m_error = "SQLException: " + ex.getMessage() +
-                    ex.getSQLState() + 
+                    ex.getSQLState() +
                     ex.getErrorCode();
             return false;
-        }          
-        catch (Exception ex) 
+        }
+        catch (Exception ex)
         {
             // handle the error
             m_error = "SQLException: " + ex.getMessage();
             return false;
-        }     
-        
+        }
+
         return true;
     }
-    
+
 
     /* Document this function
     // TODO    
     */
     public boolean CloseDatabase()
-    {        
-        try 
+    {
+        try
         {
 
             m_conn.close();
-           
-        } 
-        catch (SQLException ex) 
+        }
+        catch (SQLException ex)
         {
-            
+
             m_error = "SQLException: " + ex.getMessage();
             m_error = "SQLState: " + ex.getSQLState();
             m_error = "VendorError: " + ex.getErrorCode();
             return false;
-        }          
-        catch (Exception ex) 
+        }
+        catch (Exception ex)
         {
             m_error = "Error was " + ex.toString();
             return false;
-        }     
-        
+        }
+
         return true;
     }
-    
+
 }

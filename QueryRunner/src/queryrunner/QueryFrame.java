@@ -18,15 +18,15 @@ import javax.swing.*;
 
 public class QueryFrame extends javax.swing.JFrame {
 
-/**
- * This is the constructer for QueryFrame. It will initialize the Combobox with
- * the various queries that are part of the QueryData that has been passed to it.
- * It will also set the default state of the Command Buttons and combo boxes.
- * @param queryrunnerObj 
- */
+    /**
+     * This is the constructer for QueryFrame. It will initialize the Combobox with
+     * the various queries that are part of the QueryData that has been passed to it.
+     * It will also set the default state of the Command Buttons and combo boxes.
+     * @param queryrunnerObj
+     */
     public QueryFrame(QueryRunner queryrunnerObj) {
         initComponents();
-        m_parmlabels = new JLabel[]{jLabel1, jLabel2, jLabel3, jLabel4, jLabel9, jLabel10, jLabel11, jLabel12};        
+        m_parmlabels = new JLabel[]{jLabel1, jLabel2, jLabel3, jLabel4, jLabel9, jLabel10, jLabel11, jLabel12};
         m_textvals = new JTextField[] { jTextField5, jTextField6,jTextField7,jTextField8,jTextField9,jTextField10,jTextField11,jTextField12};
         m_queryrunner = queryrunnerObj;
         // Find out how many queries there are and set up combox box
@@ -37,13 +37,14 @@ public class QueryFrame extends javax.swing.JFrame {
         {
             this.jComboBoxQuery.addItem("Query " + (i+1));
         }
+
         jComboBoxQuery.setEnabled(false);
         jBtnRunQuery.setEnabled(false);
-        
-        jLabel14.setText(m_queryrunner.GetProjectTeamApplication());
-     }
 
-    
+        jLabel14.setText(m_queryrunner.GetProjectTeamApplication());
+    }
+
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -221,42 +222,42 @@ public class QueryFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
 
-    
-   /**
-    * This button will use the data from the textboxes, and attempt to connect to the MYSQL Server. If it is not connected, it will
-    * call the CONNECT function, otherwise it will call the DISCONNECT Function.
-    * @param evt 
-    */
+
+    /**
+     * This button will use the data from the textboxes, and attempt to connect to the MYSQL Server. If it is not connected, it will
+     * call the CONNECT function, otherwise it will call the DISCONNECT Function.
+     * @param evt
+     */
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        boolean  bOK=true; 
-        jTextArea2.setText("");      
-        
+        boolean  bOK=true;
+        jTextArea2.setText("");
+
         if (jConnectButton.getText() == "Connect")
-        {            
+        {
             bOK = m_queryrunner.Connect(this.jTextHostname.getText(), this.jTextFieldUser.getText(), String.valueOf(this.jPasswordField1.getPassword()), this.jTextFieldDatabase.getText());
-           if (bOK == true)
-           {
-               jConnectButton.setText("Disconnect");    
-               jComboBoxQuery.setEnabled(true);
-               jBtnRunQuery.setEnabled(true);  
-           }
+            if (bOK == true)
+            {
+                jConnectButton.setText("Disconnect");
+                jComboBoxQuery.setEnabled(true);
+                jBtnRunQuery.setEnabled(true);
+            }
         }
         else
         {
-           bOK = m_queryrunner.Disconnect();
-           if (bOK == true)
-           {
-               jConnectButton.setText("Connect");
-               jComboBoxQuery.setEnabled(true);
-               jBtnRunQuery.setEnabled(true); 
-           }
+            bOK = m_queryrunner.Disconnect();
+            if (bOK == true)
+            {
+                jConnectButton.setText("Connect");
+                jComboBoxQuery.setEnabled(true);
+                jBtnRunQuery.setEnabled(true);
+            }
         }
-        
+
         if (bOK == false)
         {
             this.jTextArea2.setText(m_queryrunner.GetError());
-        }       
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
@@ -266,23 +267,24 @@ public class QueryFrame extends javax.swing.JFrame {
      * query. It will also recognize if it is a "parameter" query. If it is, it will
      * make the PANEL Control which holds the parameter data to be visible, and will
      * put the appropriate parameter labels along with their textboxes.
-     * 
-     * @param evt 
+     *
+     * @param evt
      */
-    private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
-        
+    private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt)
+    { //GEN-FIRST:event_jComboBox1ActionPerformed
+
         jTextArea2.setText("");
-        String szChoice = (String)jComboBoxQuery.getSelectedItem();        
+        String szChoice = (String)jComboBoxQuery.getSelectedItem();
         String szStripChoice = szChoice.substring(6);
-        m_queryChoice = Integer.parseInt(szStripChoice)-1;        
+        m_queryChoice = Integer.parseInt(szStripChoice)-1;
         String szQuery = m_queryrunner.GetQueryText(m_queryChoice);
         this.jTextArea1.setText(szQuery);
         System.out.println("choice is " + szChoice);
-        this.jPanel2.setVisible(false);        
-         
+        this.jPanel2.setVisible(false);
+
         if (this.m_queryrunner.isParameterQuery(m_queryChoice))
-        {           
-            this.jPanel1.setVisible(true);                        
+        {
+            this.jPanel1.setVisible(true);
             int nAmt = this.m_queryrunner.GetParameterAmtForQuery(m_queryChoice);
             for (int i=0; i< nAmt; i++)
             {
@@ -291,54 +293,54 @@ public class QueryFrame extends javax.swing.JFrame {
                 m_textvals[i].setVisible(true);
                 m_textvals[i].setText("");
             }
-            
+
             for (int i = nAmt; i < 8; i++)
             {
-                m_parmlabels[i].setVisible(false);  
+                m_parmlabels[i].setVisible(false);
                 m_textvals[i].setVisible(false);
-            }            
+            }
         }
         else
         {
             this.jPanel1.setVisible(false);
         }
-        
+
     }//GEN-LAST:event_jComboBox1ActionPerformed
 
-    
-/**
- * This is the Action handler for the "RUN QUERY" button. It tries to identify
- * If it is an action query first. If it is, it will take the parameter data from
- * the various textboxes and create a parameter array that it will eventually pass
- * to the ExecuteQuery function.
- * 
- * If it is a query that returns a resultset, it will create a JTABLE which is a
- * GUI Control that enables the resultset data to transferred to it.
- * @param evt Java Event Handler
- */
+
+    /**
+     * This is the Action handler for the "RUN QUERY" button. It tries to identify
+     * If it is an action query first. If it is, it will take the parameter data from
+     * the various textboxes and create a parameter array that it will eventually pass
+     * to the ExecuteQuery function.
+     *
+     * If it is a query that returns a resultset, it will create a JTABLE which is a
+     * GUI Control that enables the resultset data to transferred to it.
+     * @param evt Java Event Handler
+     */
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
 
-        jTextArea2.setText("");        
+        jTextArea2.setText("");
         if (this.m_queryrunner.isActionQuery(m_queryChoice) == false)
             jPanel2.setVisible(true);
-        
+
         int nAmt = this.m_queryrunner.GetParameterAmtForQuery(m_queryChoice);
         String [] parmstring={};
         String [] headers;
-        String [][] allData;        
+        String [][] allData;
 
         boolean  bOK = true;
-        
+
         if (this.m_queryrunner.isParameterQuery(m_queryChoice))
         {
             parmstring = new String [nAmt];
             for (int i=0; i< nAmt; i++)
             {
                 parmstring[i] = this.m_textvals[i].getText();
-            }                    
+            }
         }
-        
-        if (this.m_queryrunner.isActionQuery(m_queryChoice))    
+
+        if (this.m_queryrunner.isActionQuery(m_queryChoice))
         {
             bOK = m_queryrunner.ExecuteUpdate(m_queryChoice, parmstring);
             if (bOK == true)
@@ -359,27 +361,27 @@ public class QueryFrame extends javax.swing.JFrame {
                 allData = m_queryrunner.GetQueryData();
                 if (m_scrollPane != null)
                 {
-                    m_scrollPane.remove(m_jTable);  
+                    m_scrollPane.remove(m_jTable);
                     jPanel2.remove(m_scrollPane);
                 }
                 m_jTable = new JTable(allData, headers);
-                
+
                 m_jTable.setBounds(100, 100, 100, 80);
                 Color ivory=new Color(255,255,208);
                 m_jTable.setOpaque(false);
-                m_jTable.setBackground(ivory);           
+                m_jTable.setBackground(ivory);
                 m_scrollPane = new JScrollPane(m_jTable);
                 jPanel2.add(m_scrollPane);// add table in panel using add() method                      
-                this.setVisible(true);                
+                this.setVisible(true);
             }
             else
             {
-                this.jTextArea2.setText(m_queryrunner.GetError());                
+                this.jTextArea2.setText(m_queryrunner.GetError());
             }
-        }                
+        }
     }//GEN-LAST:event_jButton2ActionPerformed
 
-    
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jConnectButton;
     private javax.swing.JButton jBtnRunQuery;
