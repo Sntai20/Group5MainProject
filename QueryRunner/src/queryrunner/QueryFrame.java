@@ -33,14 +33,22 @@ public class QueryFrame extends javax.swing.JFrame {
         // If it is a grid query, then enable jtable
         int nAmt = m_queryrunner.GetTotalQueries();
 
+
         for (int i=0; i < nAmt; i++)
         {
-            this.jComboBoxQuery.addItem("Query " + (i+1));
+            String queryNameForDropDownLabel = this.m_queryrunner.GetQueryName(i);
+//            this.jComboBoxQuery.addItem("Query " + (i+1));
+            this.jComboBoxQuery.addItem(queryNameForDropDownLabel);
         }
-        jComboBoxQuery.setEnabled(false);
+        jComboBoxQuery.setEnabled(true);
         jBtnRunQuery.setEnabled(false);
+        this.jTextHostname.setText("mysql-test01.ctldx44f89gq.us-east-1.rds.amazonaws.com");
+        this.jTextFieldUser.setText("admin");
+        this.jTextFieldDatabase.setText("mm_cpsc502101team05");
+
         
         jLabel14.setText(m_queryrunner.GetProjectTeamApplication());
+
      }
 
     
@@ -230,16 +238,21 @@ public class QueryFrame extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         boolean  bOK=true; 
-        jTextArea2.setText("");      
+        jTextArea2.setText("");
+
         
         if (jConnectButton.getText() == "Connect")
         {            
-            bOK = m_queryrunner.Connect(this.jTextHostname.getText(), this.jTextFieldUser.getText(), String.valueOf(this.jPasswordField1.getPassword()), this.jTextFieldDatabase.getText());
+            bOK = m_queryrunner.Connect(
+                    this.jTextHostname.getText(),
+                    this.jTextFieldUser.getText(),
+                    String.valueOf(this.jPasswordField1.getPassword()),
+                    this.jTextFieldDatabase.getText());
            if (bOK == true)
            {
                jConnectButton.setText("Disconnect");    
                jComboBoxQuery.setEnabled(true);
-               jBtnRunQuery.setEnabled(true);  
+               jBtnRunQuery.setEnabled(true);
            }
         }
         else
@@ -271,13 +284,16 @@ public class QueryFrame extends javax.swing.JFrame {
      */
     private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
         
-        jTextArea2.setText("");
-        String szChoice = (String)jComboBoxQuery.getSelectedItem();        
-        String szStripChoice = szChoice.substring(6);
-        m_queryChoice = Integer.parseInt(szStripChoice)-1;        
+        jTextArea2.setText("testline274");
+//        String szChoice = (String)jComboBoxQuery.getSelectedItem();
+//        String szStripChoice = szChoice.substring(6);
+//        m_queryChoice = Integer.parseInt(szStripChoice)-1;
+        m_queryChoice = jComboBoxQuery.getSelectedIndex();
         String szQuery = m_queryrunner.GetQueryText(m_queryChoice);
+        String queryName = m_queryrunner.GetQueryName(m_queryChoice);
+        String queryDefaultValue = m_queryrunner.GetQueryDefaultValue(m_queryChoice);
         this.jTextArea1.setText(szQuery);
-        System.out.println("choice is " + szChoice);
+        System.out.println("Query Name selected is " + queryName + " Query number " + m_queryChoice);
         this.jPanel2.setVisible(false);        
          
         if (this.m_queryrunner.isParameterQuery(m_queryChoice))
@@ -289,7 +305,7 @@ public class QueryFrame extends javax.swing.JFrame {
                 m_parmlabels[i].setVisible(true);
                 m_parmlabels[i].setText(m_queryrunner.GetParamText(m_queryChoice, i));
                 m_textvals[i].setVisible(true);
-                m_textvals[i].setText("");
+                m_textvals[i].setText(queryDefaultValue);
             }
             
             for (int i = nAmt; i < 8; i++)
