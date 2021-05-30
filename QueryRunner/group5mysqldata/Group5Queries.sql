@@ -72,3 +72,6 @@ call upd_eq_service('FC001', '2021-06-05', 'Beckman Coulter', 'preventative main
 
 select * from service_history where equipment_id = 'FC001';
 
+-- 12 Inventory attempt --
+
+
