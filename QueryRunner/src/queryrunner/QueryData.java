@@ -20,10 +20,12 @@ public class QueryData {
 //        m_queryString = query;
 //    }
     
-    QueryData(String query, String[] parms, boolean [] likeparms, boolean isAction, boolean isParm)
+    QueryData(String name, String query, String[] parms, String defaultValue, boolean [] likeparms, boolean isAction, boolean isParm)
     {
+        m_queryName = name;
         m_queryString = query;
         m_arrayParms = parms;
+        m_queryDefaultValue = defaultValue;
         m_arrayLikeParms = likeparms;
         m_isAction = isAction;
         m_isParms = isParm;        
@@ -36,10 +38,20 @@ public class QueryData {
 //        m_isAction = isAction;
 //        m_isParms = isParm;
 //    }
-    
+
+    String GetQueryName()
+    {
+        return m_queryName;
+    }
+
     String GetQueryString()
     {
         return m_queryString;
+    }
+
+    String GetQueryDefaultValue()
+    {
+        return m_queryDefaultValue;
     }
     
     int GetParmAmount()
@@ -75,9 +87,11 @@ public class QueryData {
     {
         return m_isParms;
     }
-     
+
+    private String m_queryName;
     private String m_queryString;
     private String [] m_arrayParms;
+    private String m_queryDefaultValue;
     private boolean m_isAction;
     private boolean m_isParms;   
     private boolean [] m_arrayLikeParms;

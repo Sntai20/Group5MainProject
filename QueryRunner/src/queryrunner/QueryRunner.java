@@ -25,13 +25,12 @@ public class QueryRunner {
         m_updateAmount = 0;
         m_queryArray = new ArrayList<>();
         m_error="";
-    
-        
+
         // TODO - You will need to change the queries below to match your queries.
         
         // You will need to put your Project Application in the below variable
         
-        this.m_projectTeamApplication="Clinical Data Platform";    // THIS NEEDS TO CHANGE FOR YOUR APPLICATION
+        this.m_projectTeamApplication="Clinical Data Platform";
         
         // Each row that is added to m_queryArray is a separate query. It does not work on Stored procedure calls.
         // The 'new' Java keyword is a way of initializing the data that will be added to QueryArray. Please do not change
@@ -43,13 +42,100 @@ public class QueryRunner {
         //    IsItActionQuery (e.g. Mark it true if it is, otherwise false)
         //    IsItParameterQuery (e.g.Mark it true if it is, otherwise false)
 
-        m_queryArray.add(new QueryData("Select * from clinical_test;", null, null, false, false));
-        m_queryArray.add(new QueryData("Select * from contact where contact_id=?", new String [] {"CONTACT_ID"}, new boolean [] {false},  false, true));        // THIS NEEDS TO CHANGE FOR YOUR APPLICATION
-        m_queryArray.add(new QueryData("Select * from contact where contact_name like ?", new String [] {"CONTACT_NAME"}, new boolean [] {true}, false, true));        // THIS NEEDS TO CHANGE FOR YOUR APPLICATION
-        m_queryArray.add(new QueryData("insert into contact (contact_id, contact_name, contact_salary) values (?,?,?)",new String [] {"CONTACT_ID", "CONTACT_NAME", "CONTACT_SALARY"}, new boolean [] {false, false, false}, true, true));// THIS NEEDS TO CHANGE FOR YOUR APPLICATION
-                       
+        /* 1. View all clinical test */
+        m_queryArray.add(new QueryData(
+                "Query 1: View all clinical tests",
+                "Select * from clinical_test;",
+                null, null, null, false, false));
+
+        /* 2. View all materials */
+        m_queryArray.add(new QueryData(
+                "Query 2: View all materials",
+                "Select * from materials;",
+                null, null, null, false, false));
+
+        /* 3. view all element of clinical test  clinical_test_id = '1044' */
+        m_queryArray.add(new QueryData(
+                "Query 3: View all elements of clinical test",
+                "select * from clinical_test\nwhere clinical_test_id = ?;",
+                new String [] {"clinical_test_id"}, "1044",
+                new boolean [] {false},  false, true));
+
+        /* 4. Verify that technician was competent on a test when they performed it c.clinical_test_id = '1044' */
+        m_queryArray.add(new QueryData(
+                "Query 4: Verify technician competency",
+                "select c.clinical_test_id, t.technician_id, technician_last_name, technician_first_name,\n" +
+                "competency_id, technician_has_competency_date\n" +
+                "from technician t join technician_has_competency h on t.technician_id = h.technician_id\n" +
+                "join clinical_test c on c.technician_id = t.technician_id\n" +
+                "where c.clinical_test_id = ? ;",
+                new String[]{"clinical_test_id"}, "1044",
+                new boolean[] {false}, false,true));
+
+        /* 5. Verify equipment history c.clinical_test_id = '1044' */
+        m_queryArray.add(new QueryData(
+                "Query 5: Verify equipment history",
+                "select s.equipment_id, equipment_purchase_date, equipment_service_interval, service_date, service_type, service_provider_id\n" +
+                "from equipment e join service_history s on e.equipment_id = s.equipment_id\n" +
+                "join clinical_test c on c.equipment_id = e.equipment_id\n" +
+                "where c.clinical_test_id = ? ;",
+                new String[]{"clinical_test_id"}, "1044",
+                new boolean[] {false}, false, true));
+
+        /* 6. View all equipment */
+        m_queryArray.add(new QueryData(
+                "Query 6: View all equipment",
+                "Select * from equipment;",
+                null, null, null, false, false));
+
+        /* 7. View all patients */
+        m_queryArray.add(new QueryData(
+                "Query 7: View all patients",
+                "Select * from patient;",
+                null, null, null, false, false));
+
+        /* 8. view all tests performed on certain patient patient_id = '21169' */
+        m_queryArray.add(new QueryData(
+                "Query 8: View patient test history",
+                "select patient_last_name, patient_first_name, patient_initial, patient_DOB,\n" +
+                "physician_last_name, physician_first_name, ph.physician_id, test_type\n" +
+                "from patient p join physician ph on p.physician_id = ph.physician_id\n" +
+                "join clinical_test t on p.patient_id = t.patient_id\n" +
+                "where p.patient_id = '21169' || where p.patient_id = ? ;",
+                new String[]{"patient_id"}, "21169",
+                new boolean[] {false}, false, true));
+
+        /* 9. view all technician competent on certain test competency_id = 'Urinalysis' */
+        m_queryArray.add(new QueryData(
+                "Query 9: View technicians with a competent ID",
+                "select competency_id, h.technician_id, technician_first_name, technician_last_name\n" +
+                "from technician t join technician_has_competency h on t.technician_id = h.technician_id\n" +
+                "where competency_id = 'Urinalysis' || where competency_id = ? ;",
+                new String[]{"competency_id"}, "Urinalysis",
+                new boolean[] {false}, false, true));
+
+        /* 10. Inventory */
+        m_queryArray.add(new QueryData(
+                "Query 10: Inventory",
+                "select m.material_id, material_description, material_manufacturer,\n" +
+                "sum(clinical_tests_uses_materials_quantity_used) as \"total quantity used\" from\n" +
+                "materials m join clinical_test_uses_materials c on m.material_id = c.material_id\n" +
+                "group by m.material_id;",
+                null, null, null, false, false));
     }
-       
+
+
+    public String GetQueryName(int queryChoice)
+    {
+        QueryData e=m_queryArray.get(queryChoice);
+        return e.GetQueryName();
+    }
+
+    public String GetQueryDefaultValue(int queryChoice)
+    {
+        QueryData e=m_queryArray.get(queryChoice);
+        return e.GetQueryDefaultValue();
+    }
 
     public int GetTotalQueries()
     {
@@ -62,7 +148,7 @@ public class QueryRunner {
         return e.GetParmAmount();
     }
               
-    public String  GetParamText(int queryChoice, int parmnum )
+    public String GetParamText(int queryChoice, int parmnum )
     {
        QueryData e=m_queryArray.get(queryChoice);        
        return e.GetParamText(parmnum); 
