@@ -30,7 +30,7 @@ public class QueryRunner {
         
         // You will need to put your Project Application in the below variable
         
-        this.m_projectTeamApplication="Clinical Data Platform";
+        this.m_projectTeamApplication="Lab Technologist";
         
         // Each row that is added to m_queryArray is a separate query. It does not work on Stored procedure calls.
         // The 'new' Java keyword is a way of initializing the data that will be added to QueryArray. Please do not change
@@ -48,29 +48,28 @@ public class QueryRunner {
                 "Select * from clinical_test;",
                 null, null, null, false, false));
 
-        /* 2. View all materials */
+        /* 2. Insert new clinical test. */
         m_queryArray.add(new QueryData(
-                "Query 2: View all materials",
-                "Select * from materials;",
-                null, null, null, false, false));
+                "Query 2: Add new clinical test",
+                "Insert into clinical_test (clinical_test_id, technician_id, patient_id, sop_id, equipment_id, test_type, clinical_test_date) values (?,?,?,?,?,?,?)",
+                new String[] {"clinical_test_id","technician_id", "patient_id", "sop_id", "equipment_id", "test_type", "clinical_test_date"}, null,
+                new boolean [] {false, false, false, false, false, false, false}, true, true));
 
-        /* 3. view all element of clinical test  clinical_test_id = '1044' */
+        /*3. Insert new material for clinical test.*/
         m_queryArray.add(new QueryData(
-                "Query 3: View all elements of clinical test",
-                "select * from clinical_test\nwhere clinical_test_id = ?;",
-                new String [] {"clinical_test_id"}, "1044",
+                "Query 3: Add material usage",
+                "Insert into clinical_test_uses_materials (material_id, clinical_test_id, clinical_tests_uses_materials_quantity_used) values (?,?,?)",
+                new String[] {"material id", "clinical test id", "quantity used"}, null,
+                new boolean [] {false, false, false}, true, true));
+
+        /* 4. view all elements of clinical test  clinical_test_id = '1044' */
+        m_queryArray.add(new QueryData(
+                "Query 4: View all elements of clinical test",
+                "select c.clinical_test_id, technician_id, patient_id, sop_id, equipment_id, material_id, test_type, clinical_test_date \n" +
+                "from clinical_test c join clinical_test_uses_materials m on c.clinical_test_id = m.clinical_test_id\n" +
+                "where c.clinical_test_id = ?;\n",
+                new String [] {"clinical_test_id"}, null,
                 new boolean [] {false},  false, true));
-
-        /* 4. Verify that technician was competent on a test when they performed it c.clinical_test_id = '1044' */
-        m_queryArray.add(new QueryData(
-                "Query 4: Verify technician competency",
-                "select c.clinical_test_id, t.technician_id, technician_last_name, technician_first_name,\n" +
-                "competency_id, technician_has_competency_date\n" +
-                "from technician t join technician_has_competency h on t.technician_id = h.technician_id\n" +
-                "join clinical_test c on c.technician_id = t.technician_id\n" +
-                "where c.clinical_test_id = ? ;",
-                new String[]{"clinical_test_id"}, "1044",
-                new boolean[] {false}, false,true));
 
         /* 5. Verify equipment history c.clinical_test_id = '1044' */
         m_queryArray.add(new QueryData(
@@ -78,50 +77,56 @@ public class QueryRunner {
                 "select s.equipment_id, equipment_purchase_date, equipment_service_interval, service_date, service_type, service_provider_id\n" +
                 "from equipment e join service_history s on e.equipment_id = s.equipment_id\n" +
                 "join clinical_test c on c.equipment_id = e.equipment_id\n" +
-                "where c.clinical_test_id = ? ;",
-                new String[]{"clinical_test_id"}, "1044",
+                "where c.clinical_test_id = ?;",
+                new String[]{"clinical_test_id"}, null,
                 new boolean[] {false}, false, true));
 
-        /* 6. View all equipment */
+        /* 6. Verify equipment history c.clinical_test_id = '1044' */
         m_queryArray.add(new QueryData(
-                "Query 6: View all equipment",
-                "Select * from equipment;",
-                null, null, null, false, false));
+                "Query 6: Verify equipment service history.",
+                "select s.equipment_id, equipment_purchase_date, equipment_service_interval, service_date, service_type, service_provider_id\n" +
+                "from equipment e join service_history s on e.equipment_id = s.equipment_id\n" +
+                "join clinical_test c on c.equipment_id = e.equipment_id\n" +
+                "where c.clinical_test_id = ?;",
+                new String[]{"clinical_test_id"}, null,
+                new boolean[] {false}, false, true));
 
         /* 7. View all patients */
         m_queryArray.add(new QueryData(
-                "Query 7: View all patients",
-                "Select * from patient;",
-                null, null, null, false, false));
+                "Query 7: Equipment due for service in date range.",
+                "select e.equipment_id, equipment_type, equipment_manufacturer, equipment_model,\n" +
+                "p.service_provider_id, service_provider_phone_number, service_provider_email, service_due_date\n" +
+                "from equipment e join service_history s on e.equipment_id = s.equipment_id\n" +
+                "join service_provider p on s.service_provider_id = p.service_provider_id\n" +
+                "where service_due_date between ? and ?;",
+                new String [] {"Start of date range", "End of date range"}, "2021-05-01 00:00:00",
+                new boolean[] {false, false}, false, true));
 
-        /* 8. view all tests performed on certain patient patient_id = '21169' */
+        /* 8. Verify materials used were within the expiration date. */
         m_queryArray.add(new QueryData(
-                "Query 8: View patient test history",
-                "select patient_last_name, patient_first_name, patient_initial, patient_DOB,\n" +
-                "physician_last_name, physician_first_name, ph.physician_id, test_type\n" +
-                "from patient p join physician ph on p.physician_id = ph.physician_id\n" +
-                "join clinical_test t on p.patient_id = t.patient_id\n" +
-                "where p.patient_id = '21169' || where p.patient_id = ? ;",
-                new String[]{"patient_id"}, "21169",
-                new boolean[] {false}, false, true));
+                "Query 8: Check material expiration dates.",
+                "select c.clinical_test_id, m.material_id, material_manufacturer, material_description,\n" +
+                "material_lot_number, material_expiration_date\n" +
+                "from clinical_test_uses_materials c join materials m on c.material_id = m.material_id\n" +
+                "where clinical_test_id = ?;",
+                new String[] {"Clinical test id"}, null,  new boolean[] {false}, false, true));
 
-        /* 9. view all technician competent on certain test competency_id = 'Urinalysis' */
+        /* 9. View total equipment purchases */
         m_queryArray.add(new QueryData(
-                "Query 9: View technicians with a competent ID",
+                "Query 9: View total equipment purchases",
+                "select round(sum(equipment_price), 2) as 'Total equipment purchases in time period'\n" +
+                "from equipment where equipment_purchase_date between ? and ?;",
+                new String[]{"Start date", "End date"}, null,
+                new boolean[] {false, false}, false, true));
+
+        /* 10. View all technician competent on certain test type */
+        m_queryArray.add(new QueryData(
+                "Query 10: View technicians competent on a certain test type.",
                 "select competency_id, h.technician_id, technician_first_name, technician_last_name\n" +
                 "from technician t join technician_has_competency h on t.technician_id = h.technician_id\n" +
-                "where competency_id = 'Urinalysis' || where competency_id = ? ;",
-                new String[]{"competency_id"}, "Urinalysis",
+                "where competency_id = ?;",
+                new String[]{"competency_id"}, null,
                 new boolean[] {false}, false, true));
-
-        /* 10. Inventory */
-        m_queryArray.add(new QueryData(
-                "Query 10: Inventory",
-                "select m.material_id, material_description, material_manufacturer,\n" +
-                "sum(clinical_tests_uses_materials_quantity_used) as \"total quantity used\" from\n" +
-                "materials m join clinical_test_uses_materials c on m.material_id = c.material_id\n" +
-                "group by m.material_id;",
-                null, null, null, false, false));
     }
 
 
