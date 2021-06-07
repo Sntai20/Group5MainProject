@@ -2,6 +2,7 @@
   <configuration default="false" name="QueryRunner" type="Application" factoryName="Application" nameIsGenerated="true">
     <option name="MAIN_CLASS_NAME" value="queryrunner.QueryRunner" />
     <module name="QueryRunner" />
+    <option name="PROGRAM_PARAMETERS" value="-console" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="queryrunner.*" />
